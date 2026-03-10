@@ -25,13 +25,13 @@ export const matchIdParamSchema = z.object({
 
 // POST /matches
 export const createMatchSchema = z.object({
-  sport: z.string({ error: 'Sport is required.' }).min(1, { error: 'Sport must not be empty.' }),
-  homeTeam: z.string({ error: 'Home team is required.' }).min(1, { error: 'Home team must not be empty.' }),
-  awayTeam: z.string({ error: 'Away team is required.' }).min(1, { error: 'Away team must not be empty.' }),
-  startTime: z.string({ error: 'Start time is required.' }).datetime({ error: 'Start time must be a valid ISO date string.' }),
-  endTime: z.string({ error: 'End time is required.' }).datetime({ error: 'End time must be a valid ISO date string.' }),
-  homeScore: z.coerce.number().int().nonnegative({ error: 'Home score must be a non-negative integer.' }).optional(),
-  awayScore: z.coerce.number().int().nonnegative({ error: 'Away score must be a non-negative integer.' }).optional(),
+  sport: z.string({ required_error: 'Sport is required.' }).min(1, 'Sport must not be empty.'),
+  homeTeam: z.string({ required_error: 'Home team is required.' }).min(1, 'Home team must not be empty.'),
+  awayTeam: z.string({ required_error: 'Away team is required.' }).min(1, 'Away team must not be empty.'),
+  startTime: z.string({ required_error: 'Start time is required.' }).datetime({ offset: true, message: 'Start time must be a valid ISO date string with timezone.' }),
+  endTime: z.string({ required_error: 'End time is required.' }).datetime({ offset: true, message: 'End time must be a valid ISO date string with timezone.' }),
+  homeScore: z.coerce.number().int().nonnegative().optional(),
+  awayScore: z.coerce.number().int().nonnegative().optional(),
 }).superRefine((data, ctx) => {
   // Check that end time is after start time
   if (new Date(data.startTime) >= new Date(data.endTime)) {

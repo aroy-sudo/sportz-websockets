@@ -1,7 +1,7 @@
 import { MATCH_STATUS } from '../validation/matches.js';
 
 export function getMatchStatus(startTime, endTime, now = new Date()) {
-       if (startTime == null || endTime == null) {
+    if (startTime == null || endTime == null) {
         return null;
     }
 
