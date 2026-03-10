@@ -33,6 +33,7 @@ export const createMatchSchema = z.object({
   homeScore: z.coerce.number().int().nonnegative().optional(),
   awayScore: z.coerce.number().int().nonnegative().optional(),
 }).superRefine((data, ctx) => {
+  // Check that end time is after start time
   if (new Date(data.startTime) >= new Date(data.endTime)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -40,10 +41,25 @@ export const createMatchSchema = z.object({
       path: ['endTime'],
     });
   }
+
+  // Check that home and away teams are different after normalization
+  const normalize = (str) => str.trim().replace(/\s+/g, ' ').toLowerCase();
+  if (normalize(data.homeTeam) === normalize(data.awayTeam)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Home and away teams must be different.',
+      path: ['homeTeam'],
+    });
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Home and away teams must be different.',
+      path: ['awayTeam'],
+    });
+  }
 });
 
 // PATCH /matches/:id/score
 export const updateScoreSchema = z.object({
-  homeScore: z.coerce.number().int().nonnegative({ message: 'Home score must be a non-negative integer.' }),
-  awayScore: z.coerce.number().int().nonnegative({ message: 'Away score must be a non-negative integer.' }),
+  homeScore: z.coerce.number().int().nonnegative({ error: 'Home score must be a non-negative integer.' }),
+  awayScore: z.coerce.number().int().nonnegative({ error: 'Away score must be a non-negative integer.' }),
 });
