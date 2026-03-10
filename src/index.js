@@ -1,6 +1,24 @@
 import { eq, and } from 'drizzle-orm';
 import { db, pool } from './db.js';
 import { matches, commentary } from './db/schema.js';
+import express from 'express';
+import { matchesRouter } from './routes/matches.js';
+
+const app = express();
+const PORT = 8000;
+
+app.use(express.json());
+
+app.use('/matches', matchesRouter);
+
+app.get('/', (req, res) => {
+  res.send('Welcome to the Sports Match API!');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 
 async function main() {
   try {
